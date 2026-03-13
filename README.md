@@ -363,9 +363,9 @@ This requires allocating a `Dsmem` buffer with a TMA-compatible swizzled layout 
 
 **Implementation hints:**
 - Only one thread issues TMA: `with Tx.thread(parent="warpgroup")[tid == 0]:`
-- TMA config: `{"dispatch": "tma", "cta_group": 1, "mbar": mma_bar.ptr_to([0])}`
+- TMA config: `{"dispatch": "tma", "cta_group": 1, "mbar": tma_bar.ptr_to([0])}`
 - Byte count: `(BLK_M * BLK_K + BLK_N * BLK_K) * 2` (fp16 = 2 bytes)
-- Use `Tx.ptx.mbarrier.init(mma_bar.ptr_to([0]), 1)` — 1 expected arrival from the expect_tx call.
+- Use `Tx.ptx.mbarrier.init(tma_bar.ptr_to([0]), 1)` — 1 expected arrival from the expect_tx call.
 
 **Test:** `pytest tests/test_step04.py -xvs`
 
