@@ -400,7 +400,7 @@ def hgemm_v7(M, N, K):
             # WG0: writeback loop
             #   mma2ld.wait → TMEM→RF→SMEM→GMEM (TMA store) → ld2mma.arrive
             #
-            # Note: use cta_mask=0 for TCGen05Bar.arrive (non-cluster kernel).
+            # Note: use cta_mask=1 for TCGen05Bar.arrive (1-CTA kernel).
             pass
 
     return kernel
