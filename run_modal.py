@@ -31,6 +31,9 @@ image = (
     .run_commands(
         "python -m pip install --pre -U -f https://mlc.ai/wheels 'mlc-ai-tirx-cu130==0.0.1b2'",
     )
+    .run_commands(
+        "python -m pip install --force-reinstall 'apache-tvm-ffi==0.1.9'",
+    )
     .pip_install(
         "torch",
         "pytest",
