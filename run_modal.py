@@ -12,6 +12,10 @@ Usage:
     modal run run_modal.py --step 1
     # Run multiple specific steps
     modal run run_modal.py --step 1,3,5
+
+    # Inspect generated CUDA source
+    modal run run_modal.py --inspect 7
+    modal run run_modal.py --inspect 10 --size 2048
 """
 
 import sys
@@ -54,8 +58,29 @@ def run_tests(test_pattern: str) -> int:
     return result.returncode
 
 
+@app.function(image=image, gpu="B200:1", timeout=600)
+def run_inspect(step: int, size: int) -> str:
+    import subprocess
+
+    result = subprocess.run(
+        ["python", "inspect_cuda.py", str(step), str(size)],
+        cwd="/workspace",
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode != 0:
+        return f"Error:\n{result.stderr}"
+    return result.stdout
+
+
 @app.local_entrypoint()
-def main(step: str = ""):
+def main(step: str = "", inspect: int = 0, size: int = 1024):
+    if inspect > 0:
+        print(f"Inspecting step {inspect}, size {size}x{size}x{size}...", file=sys.stderr)
+        src = run_inspect.remote(inspect, size)
+        print(src)
+        return
+
     if not step:
         print("Running all tests...")
         returncode = run_tests.remote("tests/")
