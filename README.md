@@ -777,17 +777,26 @@ This doubles the compute density per CTA: each CTA now processes a 256x256 outpu
 
 Use `inspect_cuda.py` to view the CUDA code the compiler generates from your TIRX kernel. This is the most effective way to debug deadlocks, crashes, and wrong results — it shows you exactly which threads execute which instructions.
 
-### Basic Usage
+### Basic Usage (via Modal)
+
+Use Modal to compile on a cloud B200 — no local GPU required:
 
 ```bash
-python inspect_cuda.py 7              # Step 7, size 1024 (default)
-python inspect_cuda.py 9 2048         # Step 9, size 2048
-python inspect_cuda.py 7 > v7.cu      # Save to file
+modal run run_modal.py --inspect 7              # Step 7, size 1024 (default)
+modal run run_modal.py --inspect 9 --size 2048  # Step 9, size 2048
+modal run run_modal.py --inspect 7 > v7.cu      # Save to file
 
 # Search for specific instructions:
-python inspect_cuda.py 7 | grep tcgen05_alloc
-python inspect_cuda.py 7 | grep mbarrier_init
-python inspect_cuda.py 7 | grep -B5 -A5 "tcgen05_alloc"
+modal run run_modal.py --inspect 7 | grep tcgen05_alloc
+modal run run_modal.py --inspect 7 | grep mbarrier_init
+modal run run_modal.py --inspect 7 | grep -B5 -A5 "tcgen05_alloc"
+```
+
+If you have a local Blackwell GPU with the TIRX wheel installed, you can also run directly:
+
+```bash
+python inspect_cuda.py 7
+python inspect_cuda.py 9 2048
 ```
 
 ### Reading the Generated Code
